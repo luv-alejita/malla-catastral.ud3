@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ingeniería Catastral y Geodesia</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fef9f4;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: fuchsia;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 3em;
+      margin-bottom: 40px;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 20px;
+      overflow-x: auto;
+    }
+    .semestre {
+      background: #ffffffcc;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .titulo-semestre {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn {
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .completado {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .bloqueado {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .basico { background-color: #fcd5ce; }
+    .complementario { background-color: #e0bbf9; }
+    .intrinseco { background-color: #cce3ff; }
+    .extrinseco { background-color: #cbf1c3; }
+  </style>
+</head>
+<body>
+  <h1>Ingeniería Catastral y Geodesia</h1>
+
+  <div id="contenedor" class="grid-container"></div>
+
+  <script>
+    const materias = {
+      1: ["Cálculo Diferencial", "basico", 1, []],
+      2: ["Cálculo Integral", "basico", 2, [1]],
+      3: ["Cálculo Multivariado", "basico", 3, [2]],
+      4: ["Ecuaciones Diferenciales", "basico", 3, [2]],
+      5: ["Álgebra Lineal", "basico", 1, []],
+      6: ["Probabilidad", "basico", 4, [2, 5]],
+      7: ["Estadística", "basico", 5, [6]],
+      8: ["Matemáticas Especiales", "basico", 5, [3]],
+
+      10: ["Programación Básica", "basico", 2, []],
+      11: ["Programación Orientada a Objetos", "basico", 3, [10]],
+      12: ["Bases de Datos", "basico", 5, [11]],
+
+      20: ["Física I: Mecánica Newtoniana", "basico", 2, [1]],
+      21: ["Física II: Electromagnetismo", "basico", 3, [20, 2]],
+      22: ["Física III: Ondas y Física Moderna", "basico", 4, [21]],
+
+      30: ["Diseño Topográfico", "basico", 1, []],
+      31: ["Topografía", "basico", 2, [30]],
+      32: ["Fotogrametría", "basico", 3, [31]],
+      33: ["Percepción Remota e Interpretación de Imágenes", "basico", 4, [32]],
+      34: ["Cartografía", "basico", 5, [33]],
+      35: ["Procesamiento Digital de Imágenes", "basico", 7, [34]],
+      36: ["Fotogrametría Digital", "basico", 8, [35]],
+
+      40: ["Geografía Humana y Física", "basico", 4, []],
+      41: ["Suelos", "basico", 3, []],
+      42: ["Sistemas Catastrales", "basico", 5, [40]],
+      43: ["Legislación Catastral", "basico", 6, [42]],
+      44: ["Avalúos Puntuales", "basico", 7, [43]],
+      45: ["Avalúos Masivos", "basico", 8, [44]],
+
+      50: ["Geodesia Geométrica", "basico", 4, [2]],
+      51: ["Ajustes Geodésicos", "basico", 5, [5, 6, 50]],
+      52: ["Geodesia Física", "basico", 6, [22, 8, 51]],
+      53: ["Geodesia Satelital", "basico", 7, [52]],
+
+      60: ["Sistemas de Información Geográfica", "basico", 6, [12, 34]],
+      61: ["Procesos Catastrales", "basico", 7, [60, 43]],
+      62: ["Gestión Catastral y Catastro Multipropósito", "intrinseco", 9, [61, 44]],
+
+      70: ["Cátedra Democracia y Ciudadanía", "complementario", 1, []],
+      71: ["Cátedra Francisco José de Caldas", "complementario", 3, [70]],
+      72: ["Producción y Comprensión de Textos", "complementario", 1, []],
+      73: ["Cátedra de Contexto", "complementario", 4, [70, 72]],
+      74: ["Hombre Sociedad y Ecología", "complementario", 6, [73]],
+      75: ["Ética y Bioética", "complementario", 2, []],
+      76: ["Economía", "basico", 5, [2]],
+      77: ["Ingeniería Económica", "basico", 6, [76]],
+      78: ["Economía II", "basico", 6, [76]],
+      79: ["Formulación, Gestión y Evaluación de Proyectos", "basico", 8, [77]],
+      80: ["Ordenamiento Territorial", "basico", 9, [79, 40, 60]],
+
+      90: ["Segunda Lengua I", "complementario", 4, []],
+      91: ["Segunda Lengua II", "complementario", 6, [90]],
+      92: ["Segunda Lengua III", "complementario", 8, [91]],
+
+      100: ["Electiva Intrínseca I", "intrinseco", 7, []],
+      101: ["Electiva Intrínseca II", "intrinseco", 7, []],
+      102: ["Electiva Intrínseca III", "intrinseco", 8, []],
+      103: ["Electiva Intrínseca IV", "intrinseco", 8, []],
+      104: ["Electiva Intrínseca V", "intrinseco", 9, []],
+      105: ["Electiva Intrínseca VI", "intrinseco", 9, []],
+      106: ["Electiva Extrínseca I", "extrinseco", 6, []],
+      107: ["Electiva Extrínseca II", "extrinseco", 9, []],
+      108: ["Electiva Extrínseca III", "extrinseco", 10, []],
+
+      110: ["Metodología de la Investigación", "basico", 8, [60, 43]],
+      111: ["Trabajo de Grado I", "basico", 9, [110]],
+      112: ["Trabajo de Grado II", "basico", 10, [111]],
+
+      113: ["Valorización", "basico", 10, [44, 45]],
+      114: ["Planeación del Desarrollo", "basico", 10, [45, 80]]
+    };
+
+    const estado = {};
+
+    function crearInterfaz() {
+      const contenedor = document.getElementById('contenedor');
+      for (let s = 1; s <= 10; s++) {
+        const div = document.createElement('div');
+        div.className = 'semestre';
+        div.innerHTML = `<div class="titulo-semestre">Semestre ${s}</div>`;
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        for (const [codigo, [nombre, tipo, semestre, prereqs]] of Object.entries(materias)) {
+          if (semestre !== s) continue;
+          const btn = document.createElement('button');
+          btn.className = `btn ${tipo} bloqueado`;
+          btn.textContent = nombre;
+          btn.id = `btn-${codigo}`;
+          btn.onclick = () => marcarComoCompletada(codigo);
+          grid.appendChild(btn);
+        }
+
+        div.appendChild(grid);
+        contenedor.appendChild(div);
+      }
+      actualizarDisponibilidad();
+    }
+
+    function marcarComoCompletada(codigo) {
+      if (estado[codigo]) return;
+      const prereqs = materias[codigo][3];
+      if (prereqs.some(p => !estado[p])) return;
+
+      estado[codigo] = true;
+      const btn = document.getElementById(`btn-${codigo}`);
+      btn.classList.add('completado');
+      actualizarDisponibilidad();
+    }
+
+    function actualizarDisponibilidad() {
+      for (const [codigo, [nombre, tipo, semestre, prereqs]] of Object.entries(materias)) {
+        const btn = document.getElementById(`btn-${codigo}`);
+        if (estado[codigo]) continue;
+        const disponible = prereqs.every(p => estado[p]);
+        if (disponible) {
+          btn.classList.remove('bloqueado');
+        }
+      }
+    }
+
+    crearInterfaz();
+  </script>
+</body>
+</html>
